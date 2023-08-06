@@ -12,23 +12,8 @@
     <link rel="manifest" href="site.webmanifest">
     <link rel="stylesheet" href="global.css">
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.5.1/event-calendar.min.css">
-    <script src="https://cdn.jsdelivr.net/npm/@event-calendar/build@1.5.1/event-calendar.min.js"></script>
-    <!-- Yandex.Metrika counter -->
-    <script type="text/javascript" >
-        (function(m,e,t,r,i,k,a){m[i]=m[i]||function(){(m[i].a=m[i].a||[]).push(arguments)};
-            m[i].l=1*new Date();k=e.createElement(t),a=e.getElementsByTagName(t)[0],k.async=1,k.src=r,a.parentNode.insertBefore(k,a)})
-        (window, document, "script", "https://mc.yandex.ru/metrika/tag.js", "ym");
-
-        ym(75029251, "init", {
-            clickmap:true,
-            trackLinks:true,
-            accurateTrackBounce:true,
-            webvisor:true
-        });
-    </script>
-    <noscript><div><img src="https://mc.yandex.ru/watch/75029251" style="position:absolute; left:-9999px;" alt="" /></div></noscript>
-    <!-- /Yandex.Metrika counter -->
+    <link rel="stylesheet" href="build/event-calendar.min.css">
+    <script src="build/event-calendar.min.js"></script>
 </head>
 
 <body>
@@ -37,8 +22,56 @@
 <div class="row">
     <div id="ec" class="col"></div>
 </div>
+<div class="theme-sw">
+    <input name="sw" id="sw_auto" data-id="auto" type="radio" checked>
+    <label for="sw_auto">Auto</label>
+    <input name="sw" id="sw_light" data-id="light" type="radio">
+    <label for="sw_light">Light</label>
+    <input name="sw" id="sw_dark" data-id="dark" type="radio">
+    <label for="sw_dark">Dark</label>
+</div>
+<script>
+    const switchersWraps = document.querySelectorAll('.theme-sw');
+    const switcherElement = document.body;
+    const lightModeClass = 'body-light';
+    const darkModeClass = 'body-dark';
 
-<script type="text/javascript">
+    const switchTheme = (theme) => {
+        if (theme === 'light') {
+            switcherElement.classList.remove(darkModeClass);
+            switcherElement.classList.add(lightModeClass);
+        } else if (theme === 'dark') {
+            switcherElement.classList.remove(lightModeClass);
+            switcherElement.classList.add(darkModeClass);
+        } else {
+            switcherElement.classList.remove(lightModeClass);
+            switcherElement.classList.remove(darkModeClass);
+        }
+        localStorage.setItem('theme', theme);
+    }
+
+    const theme = localStorage.getItem('theme') || 'auto';
+    switchTheme(theme);
+    switchersWraps[0].querySelector(`[data-id=${theme}]`).checked = true;
+
+    if (switchersWraps) {
+        switchersWraps.forEach((wrap) => {
+            const switchers = wrap.querySelectorAll('input');
+            switchers.forEach((sw) => {
+                sw.addEventListener('change', (e) => {
+                    let theme = e.target.dataset.id;
+                    switchersWraps.forEach((wrap2) => {
+                        if (wrap2 !== e.target.parentElement) {
+                            wrap2.querySelector(`[data-id=${theme}]`).checked = true;
+                        }
+                    });
+                    switchTheme(theme);
+                });
+            });
+        });
+    }
+</script>
+<script>
     let ec = new EventCalendar(document.getElementById('ec'), {
         view: 'timeGridWeek',
         height: '800px',
